@@ -16,7 +16,7 @@ hl.unbind("SUPER + SHIFT + W") -- was: Omawrite
 o.bind("SUPER + SHIFT + W", "Wifi", "omarchy-shell shell toggle omarchy.network")
 
 hl.unbind("SUPER + SHIFT + C") -- was: Calendar (Hey webapp)
-o.bind("SUPER + SHIFT + C", "Calendar", { launch = "rencal" })
+o.bind("SUPER + SHIFT + C", "Calendar", "omarchy-shell shell toggle org.ren.caldir")
 
 hl.unbind("SUPER + SLASH") -- was: Monitor scaling up
 o.bind("SUPER + SLASH", "Passwords (quick access)", { launch = "1password --quick-access" })
@@ -60,8 +60,3 @@ hl.workspace_rule({
 	on_created_empty = '[float; size 1000 800; border 1; center] omarchy-launch-editor "+Obsidian today"',
 	persistent = false,
 })
-
--- Default apps per workspace (launched on first visit when the workspace is empty).
-hl.workspace_rule({ workspace = "1", on_created_empty = "omarchy-launch-editor" })
-hl.workspace_rule({ workspace = "2", on_created_empty = "omarchy-launch-browser" })
-hl.workspace_rule({ workspace = "3", on_created_empty = o.launch_sole("slack", "slack") })
