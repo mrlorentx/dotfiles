@@ -8,3 +8,4 @@ solaar-git
 zen-browser-bin
 google-cloud-cli
 rencal-bin
+spotifast
