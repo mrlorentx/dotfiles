@@ -23,11 +23,15 @@ o.bind("SUPER + SLASH", "Passwords (quick access)", { launch = "1password --quic
 
 -- System ----------------------------------------------------------------------
 
+hl.unbind("SUPER + Q") -- 4.5 shipped close window on super + q...
 o.bind("SUPER + Q", "Lock system", "omarchy-system-lock")
 
 hl.unbind("SUPER + CTRL + code:13") -- was: Bar panel 4
 o.bind("SUPER + CTRL + code:13", "Screenshot", "omarchy-capture-screenshot")
 o.bind("SUPER + CTRL + ALT + code:13", "Screenrecording", "omarchy-capture-screenrecording")
+
+hl.unbind("ALT + SPACE") -- Unbind omarchy dictation
+o.bind("SUPER + D", "Toggle dictation", "omarchy-dictation toggle")
 
 -- Focus via vim-hypr-nav --------------------------------------------------------
 -- Takes over J/K/L from Omarchy and drops arrow focus, matching the old setup.
