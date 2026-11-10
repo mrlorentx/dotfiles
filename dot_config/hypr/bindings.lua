@@ -64,3 +64,7 @@ hl.workspace_rule({
 	on_created_empty = '[float; size 1000 800; border 1; center] omarchy-launch-editor "$HOME/vaults/notes/scratch.md"',
 	persistent = false,
 })
+
+-- Named workspaces reachable from any monitor (SUPER+1..9) ----------------------
+
+require("hypr.workspaces")
