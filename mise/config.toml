@@ -1,8 +1,12 @@
 # Global mise config. ~/.config/mise is a symlink to this directory
-# (~/.dotfiles/mise), created by `mise bootstrap --from ... --config-dir mise`.
+# (~/dotfiles/mise), created by `mise bootstrap --from ... --config-dir mise`.
+
+[settings]
+# Where this repo is checked out. Dotfile group roots are relative to it.
+dotfiles.root = "~/dotfiles"
 
 # --- Dotfiles ---------------------------------------------------------------
-# Everything under ~/.dotfiles/home mirrors $HOME. Each file is symlinked
+# Everything under ~/dotfiles/home mirrors $HOME. Each file is symlinked
 # individually, so directories in $HOME stay real and can hold unmanaged files.
 [dotfile_groups.home]
 root = "home"

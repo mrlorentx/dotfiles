@@ -17,11 +17,11 @@ Omarchy ships mise, yay, git and tmux, so nothing needs installing first.
 
    ```sh
    mise bootstrap --from https://github.com/mrlorentx/dotfiles.git \
-     --from-dir ~/.dotfiles --config-dir mise
+     --from-dir ~/dotfiles --config-dir mise
    ```
 
-   This clones the repo to `~/.dotfiles`, links `~/.config/mise` to
-   `~/.dotfiles/mise`, and then applies everything: packages, repos,
+   This clones the repo to `~/dotfiles`, links `~/.config/mise` to
+   `~/dotfiles/mise`, and then applies everything: packages, repos,
    dotfiles, tools, the vault backup timer.
 
 3. Open 1Password, sign in, and enable
@@ -32,7 +32,7 @@ Omarchy ships mise, yay, git and tmux, so nothing needs installing first.
    extensions.
 
 5. To push changes from the new machine, switch the clone to SSH:
-   `git -C ~/.dotfiles remote set-url origin git@github.com:mrlorentx/dotfiles.git`
+   `git -C ~/dotfiles remote set-url origin git@github.com:mrlorentx/dotfiles.git`
 
 ## Layout
 
@@ -81,7 +81,7 @@ mise dot apply             # link new files added under home/
 - **Add a system package:** add a `"pacman:<name>"` or `"aur:<name>"` line
   under `[bootstrap.packages]` and run `mise bootstrap packages apply`.
   Deleting an `aur:` line does not uninstall the package.
-- **Update another machine:** `git -C ~/.dotfiles pull && mise bootstrap`.
+- **Update another machine:** `git -C ~/dotfiles pull && mise bootstrap`.
 
 System upgrades stay with Omarchy (`pacman -Syu`); mise does not do them.
 
