@@ -17,12 +17,14 @@ Omarchy ships mise, yay, git and tmux, so nothing needs installing first.
 
    ```sh
    mise bootstrap --from https://github.com/mrlorentx/dotfiles.git \
-     --from-dir ~/dotfiles --config-dir mise
+     --from-dir ~/dotfiles --config-dir mise --force-dotfiles
    ```
 
    This clones the repo to `~/dotfiles`, links `~/.config/mise` to
    `~/dotfiles/mise`, and then applies everything: packages, repos,
-   dotfiles, tools, the vault backup timer.
+   dotfiles, tools, the vault backup timer. `--force-dotfiles` replaces
+   the default configs Omarchy ships (`.bashrc`, hypr, tmux, ...) with
+   symlinks to the ones here; it is only needed on this first run.
 
 3. Open 1Password, sign in, and enable
    Settings → Developer → Integrate with 1Password CLI. The next new shell
