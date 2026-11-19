@@ -10,7 +10,6 @@ source ~/.aliases.sh
 
 # Tool integrations
 complete -C '/usr/local/bin/aws_completer' aws
-eval "$(mise activate bash)"
 
 export CLIPSSH_HOST=mrlorentx@forge
 
