@@ -53,7 +53,6 @@ keymaps/              Iris keyboard firmware keymap (stored, not deployed)
 All of it is declared in `mise/config.toml`:
 
 - `[dotfile_groups.home]` symlinks each file under `home/` into `$HOME`.
-  `mode = "absent"` entries remove leftovers from older setups.
 - `[bootstrap.packages]` installs `pacman:` and `aur:` packages on top of
   the Omarchy baseline.
 - `[bootstrap.repos]` clones the vault and the tmux plugin manager.

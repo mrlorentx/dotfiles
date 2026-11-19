@@ -19,18 +19,6 @@ exclude = [
   ".claude/skills/golang-linter/assets/.golangci.yml",
 ]
 
-[dotfile_groups.home.entries]
-# Leftovers from older setups that should not exist.
-"~/.tmux.conf" = { mode = "absent" }
-"~/.config/hypr/bindings.conf" = { mode = "absent" }
-"~/.config/hypr/input.conf" = { mode = "absent" }
-"~/.config/hypr/looknfeel.conf" = { mode = "absent" }
-"~/.config/hypr/monitors.conf" = { mode = "absent" }
-# The hand-written vault-backup units, replaced by [bootstrap.linux.systemd.units].
-"~/.config/systemd/user/vault-backup.service" = { mode = "absent" }
-"~/.config/systemd/user/vault-backup.timer" = { mode = "absent" }
-"~/.config/systemd/user/timers.target.wants/vault-backup.timer" = { mode = "absent" }
-
 # --- Bootstrap --------------------------------------------------------------
 # `mise bootstrap` applies everything below, in mise's fixed order: packages,
 # repos, dotfiles, tools, services, then the final hook. Safe to rerun.
