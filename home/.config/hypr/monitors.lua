@@ -9,7 +9,12 @@ hl.monitor({ output = "", mode = "preferred", position = "auto", scale = omarchy
 
 -- Home 32" 4K (matched by description, since the port name changes between docks/cables):
 -- scale 1.2 matches the look of a 27" 4K.
-hl.monitor({ output = "desc:Lenovo Group Limited Y32p-30 U1HN8KK0", mode = "3840x2160@144", position = "auto", scale = 1.2 })
+hl.monitor({
+	output = "desc:Lenovo Group Limited Y32p-30 U1HN8KK0",
+	mode = "3840x2160@144",
+	position = "auto",
+	scale = 1.4,
+})
 
 -- Configure a specific monitor.
 -- hl.monitor({ output = "DP-2", mode = "2560x1440@144", position = "0x0", scale = 1 })
