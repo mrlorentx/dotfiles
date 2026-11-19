@@ -1,0 +1,118 @@
+# Global mise config. ~/.config/mise is a symlink to this directory
+# (~/dotfiles/mise), created by `mise bootstrap --from ... --config-dir mise`.
+
+[settings]
+# Where this repo is checked out. Dotfile group roots are relative to it.
+dotfiles.root = "~/dotfiles"
+
+# --- Dotfiles ---------------------------------------------------------------
+# Everything under ~/dotfiles/home mirrors $HOME. Each file is symlinked
+# individually, so directories in $HOME stay real and can hold unmanaged files.
+[dotfile_groups.home]
+root = "home"
+target = "~"
+mode = "symlink-each"
+exclude = [
+  # Left to Omarchy, which ships a better one than the copy in this repo.
+  ".config/hypr/.luarc.json",
+  # Never deployed under chezmoi; parked until the agent skills get a review.
+  ".claude/skills/golang-linter/assets/.golangci.yml",
+]
+
+# --- Bootstrap --------------------------------------------------------------
+# `mise bootstrap` applies everything below, in mise's fixed order: packages,
+# repos, dotfiles, tools, services, then the final hook. Safe to rerun.
+# Omarchy already provides mise, yay, git, base-devel and tmux.
+
+[bootstrap.packages]
+# Official and Omarchy repos.
+"pacman:1password" = "latest"
+"pacman:1password-cli" = "latest"
+"pacman:mosh" = "latest"
+"pacman:nmap" = "latest"
+"pacman:postgresql" = "latest"
+"pacman:slack-desktop" = "latest"
+"pacman:tailscale" = "latest"
+"pacman:voxtype-bin" = "latest"
+"pacman:zen-browser-bin" = "latest"
+# AUR, built with yay. Removing a line here does not uninstall the package.
+"aur:google-cloud-cli" = "latest"
+"aur:hyprmon-bin" = "latest"
+"aur:rencal-bin" = "latest"
+"aur:solaar-git" = "latest"
+"aur:spotifast" = "latest"
+
+[bootstrap.repos]
+"~/vaults" = { url = "git@github.com:mrlorentx/vaults.git" }
+"~/.tmux/plugins/tpm" = { url = "https://github.com/tmux-plugins/tpm", depth = 1 }
+
+# Vault backup: commit and push ~/vaults every 3 minutes. mise writes these to
+# ~/.config/systemd/user as dev.mise.vault-backup.service and
+# dev.mise.vault-backup-timer.timer, then enables the timer.
+[bootstrap.linux.systemd.units.vault-backup]
+description = "Commit and push obsidian vault changes to git"
+type = "oneshot"
+exec_start = "%h/.local/bin/vault-backup"
+wanted_by = []
+start = false
+
+[bootstrap.linux.systemd.units.vault-backup-timer]
+description = "Run the vault backup every 3 minutes"
+on_boot_sec = "2min"
+on_unit_active_sec = "3min"
+persistent = true
+unit = "vault-backup"
+
+[bootstrap.hooks.post-dotfiles]
+description = "Install and update tmux plugins with TPM"
+run = '''
+tpm=~/.tmux/plugins/tpm
+[ -x "$tpm/bin/install_plugins" ] || exit 0
+# TPM talks to a running tmux server. Without one, start a throwaway
+# detached session for the duration of this hook.
+started=""
+if ! tmux has-session 2>/dev/null; then
+  tmux new-session -d -s mise-tpm-setup
+  started=1
+fi
+tmux set-environment -g TMUX_PLUGIN_MANAGER_PATH "$HOME/.tmux/plugins/"
+tmux source-file ~/.config/tmux/tmux.conf 2>/dev/null || true
+"$tpm/bin/install_plugins" || true
+"$tpm/bin/update_plugins" all || true
+tmux source-file ~/.config/tmux/tmux.conf 2>/dev/null || true
+if [ -n "$started" ]; then tmux kill-session -t mise-tpm-setup; fi
+'''
+
+[bootstrap.hooks.post-tools]
+description = "Install gh CLI extensions (needs `gh auth login` first)"
+run = '''
+for ext in meiji163/gh-notify; do
+  mise exec -- gh extension list | grep -q "$ext" \
+    || mise exec -- gh extension install "$ext" \
+    || echo "gh extension $ext not installed; run gh auth login and rerun mise bootstrap"
+done
+'''
+
+[bootstrap.hooks.final]
+description = "Keep user timers (vault backup) running without a login session"
+run = "loginctl enable-linger \"$USER\" || true"
+
+# --- Tools ------------------------------------------------------------------
+[tools]
+node = "lts"
+"npm:pnpm" = "latest"
+go = "latest"
+chezmoi = "latest"
+opentofu = "latest"
+gh = "latest"
+golangci-lint = "latest"
+stripe-cli = "latest"
+uv = "latest"
+yq = "latest"
+yt-dlp = "latest"
+opencode = "latest"
+zola = "latest"
+bitwarden = "latest"
+"pipx:httpie" = "latest"
+codex = "latest"
+claude = "latest"

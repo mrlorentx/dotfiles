@@ -1,78 +1,94 @@
 # Dotfiles
 
-Personal Arch / Omarchy setup, managed with [chezmoi](https://chezmoi.io).
+Personal Arch / Omarchy setup, managed entirely with [mise](https://mise.jdx.dev):
+dotfiles, system packages, CLI tools, repos and services all come from
+`mise/config.toml`.
 
 ## Bootstrap a fresh machine
 
-After Omarchy is installed:
+Omarchy ships mise, yay, git and tmux, so nothing needs installing first.
+(On plain Arch: `sudo pacman -S mise git base-devel`, plus yay from the AUR.)
 
-```sh
-curl -fsSL https://raw.githubusercontent.com/mrlorentx/dotfiles/main/bootstrap.sh | bash
-```
+1. Restore the SSH key to `~/.ssh/`. The vault repo is private and cloned
+   over SSH. No key yet? Add `--skip repos` to the command below and rerun
+   `mise bootstrap` once the key is in place.
 
-That installs chezmoi, 1Password (app + CLI), yay, then runs
-`chezmoi init --apply` which clones this repo and applies it. The
-chezmoi `run_once_` scripts then install everything else via pacman,
-yay, and mise.
+2. Run:
 
-You'll be prompted once to enable 1Password's CLI integration —
-required for the secrets sourcer.
+   ```sh
+   mise bootstrap --from https://github.com/mrlorentx/dotfiles.git \
+     --from-dir ~/dotfiles --config-dir mise --force-dotfiles
+   ```
+
+   This clones the repo to `~/dotfiles`, links `~/.config/mise` to
+   `~/dotfiles/mise`, and then applies everything: packages, repos,
+   dotfiles, tools, the vault backup timer. `--force-dotfiles` replaces
+   the default configs Omarchy ships (`.bashrc`, hypr, tmux, ...) with
+   symlinks to the ones here; it is only needed on this first run.
+
+3. Open 1Password, sign in, and enable
+   Settings → Developer → Integrate with 1Password CLI. The next new shell
+   then materializes the secrets.
+
+4. Run `gh auth login`, then `mise bootstrap` again to install the gh
+   extensions.
+
+5. To push changes from the new machine, switch the clone to SSH:
+   `git -C ~/dotfiles remote set-url origin git@github.com:mrlorentx/dotfiles.git`
 
 ## Layout
 
 ```
-bootstrap.sh                  fresh-machine bootstrap (Arch/Omarchy)
-dot_bashrc                    → ~/.bashrc (sources omarchy defaults + personal)
-dot_aliases.sh                → ~/.aliases.sh
-dot_tmux.conf                 → ~/.tmux.conf
-dot_claude/skills/            → ~/.claude/skills/ (Claude Code skills)
-dot_config/
-  hypr/                       → ~/.config/hypr/ (Hyprland personal layer)
-  mise/config.toml            → ~/.config/mise/config.toml (tool versions)
-  nvim/                       → ~/.config/nvim/ (LazyVim config)
-  zsh/secrets-{in,sourcer}.zsh → ~/.config/zsh/ (1Password-backed env)
-dot_local/bin/                → ~/.local/bin/ (personal scripts)
-packages/
-  arch.txt                    pacman packages beyond omarchy baseline
-  aur.txt                     yay/AUR packages
-  gh-extensions.txt           gh CLI extensions
-run_once_before_10-install-system-packages.sh.tmpl
-run_once_after_20-install-mise-tools.sh
-run_once_after_30-install-gh-extensions.sh.tmpl
-keymaps/                      ZMK firmware (not deployed, just stored)
+home/                 mirrors $HOME; every file is symlinked into place
+  .bashrc  .aliases.sh
+  .claude/skills/     Claude Code skills
+  .config/            hypr, nvim, tmux, alacritty, foot, omarchy, zsh
+  .local/bin/         personal scripts
+mise/config.toml      the global mise config (~/.config/mise links here)
+keymaps/              Iris keyboard firmware keymap (stored, not deployed)
 ```
 
-## Tool layers
+## What mise manages
 
-- **chezmoi** deploys config files to `$HOME`
-- **mise** (`dot_config/mise/config.toml`) installs CLI binaries and
-  language runtimes — node, go, gh, chezmoi self-host, golangci-lint,
-  stripe-cli, uv, yq, yt-dlp, opencode, zola, bitwarden, pnpm, httpie
-- **pacman / yay** (`packages/*.txt`) install daemons, GUI apps, and
-  anything that doesn't fit mise's binary-only model
-- **Omarchy** provides the base Hyprland desktop and most of its
-  package list — these dotfiles only layer extras on top
+All of it is declared in `mise/config.toml`:
+
+- `[dotfile_groups.home]` symlinks each file under `home/` into `$HOME`.
+- `[bootstrap.packages]` installs `pacman:` and `aur:` packages on top of
+  the Omarchy baseline.
+- `[bootstrap.repos]` clones the vault and the tmux plugin manager.
+- `[bootstrap.linux.systemd.units]` defines the vault backup service and
+  its 3-minute timer.
+- `[bootstrap.hooks]` installs tmux plugins and gh extensions, and enables
+  linger. Hooks run on every bootstrap.
+- `[tools]` lists CLI tools and language runtimes.
+
+## Everyday use
+
+```sh
+mise bootstrap status      # what differs from the config
+mise bootstrap             # apply everything (safe to rerun)
+mise bootstrap --dry-run   # preview
+
+mise dot status            # dotfiles only
+mise dot apply             # link new files added under home/
+```
+
+- **Edit a dotfile:** edit it in place. It is a symlink into this repo, so
+  the change shows up in `git status` here. Commit and push.
+- **Add a dotfile:** `mise dot add --group home ~/.config/foo/bar.toml`,
+  or create it under `home/` and run `mise dot apply`.
+- **Add a tool:** `mise use -g <tool>`, or edit `[tools]` and run
+  `mise install`.
+- **Add a system package:** add a `"pacman:<name>"` or `"aur:<name>"` line
+  under `[bootstrap.packages]` and run `mise bootstrap packages apply`.
+  Deleting an `aur:` line does not uninstall the package.
+- **Update another machine:** `git -C ~/dotfiles pull && mise bootstrap`.
+
+System upgrades stay with Omarchy (`pacman -Syu`); mise does not do them.
 
 ## Secrets
 
-Schema lives in git at `dot_config/zsh/secrets-in.zsh` as
-`op://vault/item/field` references. On the first shell of a new
-machine, `secrets-sourcer.zsh` runs `op inject` once to materialize
-values into `~/.cache/zsh/secrets.zsh`. Subsequent shells just
-`source` the cached file — no per-shell `op` overhead.
-
-## Making changes
-
-```sh
-chezmoi edit ~/.bashrc        # edit source, get auto-deploy on save
-# or edit ~/.local/share/chezmoi/ directly, then:
-chezmoi apply
-
-chezmoi diff                  # preview pending changes
-chezmoi cd                    # cd into the source dir
-```
-
-To add a tool, edit `dot_config/mise/config.toml` and run
-`mise install`. To add a system package, edit `packages/arch.txt` or
-`packages/aur.txt` — the next `chezmoi apply` re-runs the install
-script (idempotent thanks to `--needed`).
+The schema lives in git at `home/.config/zsh/secrets-in.zsh` as
+`op://vault/item/field` references. On the first shell of a new machine,
+`secrets-sourcer.zsh` runs `op inject` once to materialize the values into
+`~/.cache/zsh/secrets.zsh`. Later shells just source the cached file.

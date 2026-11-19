@@ -1,2 +1,5 @@
 # Secrets for env
 .secrets.sh
+
+# Machine-local mise overrides
+mise/config.local.toml
