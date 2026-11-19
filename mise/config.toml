@@ -19,6 +19,14 @@ exclude = [
   ".claude/skills/golang-linter/assets/.golangci.yml",
 ]
 
+[dotfile_groups.home.entries]
+# These are copied instead of symlinked. After editing them in the repo run
+# `mise dot apply`; after a live change run `mise dot add --changed`.
+# Omarchy refuses plugins that contain symlinks.
+"~/.config/omarchy/plugins/mrlorentx.workspaces" = { mode = "copy" }
+# Omarchy rewrites this file by replacing it, which would break a symlink.
+"~/.config/omarchy/shell.json" = { mode = "copy", permissions = "0600" }
+
 # --- Bootstrap --------------------------------------------------------------
 # `mise bootstrap` applies everything below, in mise's fixed order: packages,
 # repos, dotfiles, tools, services, then the final hook. Safe to rerun.

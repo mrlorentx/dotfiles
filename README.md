@@ -39,7 +39,7 @@ Omarchy ships mise, yay, git and tmux, so nothing needs installing first.
 ## Layout
 
 ```
-home/                 mirrors $HOME; every file is symlinked into place
+home/                 mirrors $HOME; files are symlinked into place
   .bashrc  .aliases.sh
   .claude/skills/     Claude Code skills
   .config/            hypr, nvim, tmux, alacritty, foot, omarchy, zsh
@@ -53,6 +53,7 @@ keymaps/              Iris keyboard firmware keymap (stored, not deployed)
 All of it is declared in `mise/config.toml`:
 
 - `[dotfile_groups.home]` symlinks each file under `home/` into `$HOME`.
+  Two Omarchy paths are copied instead, see below.
 - `[bootstrap.packages]` installs `pacman:` and `aur:` packages on top of
   the Omarchy baseline.
 - `[bootstrap.repos]` clones the vault and the tmux plugin manager.
@@ -75,6 +76,13 @@ mise dot apply             # link new files added under home/
 
 - **Edit a dotfile:** edit it in place. It is a symlink into this repo, so
   the change shows up in `git status` here. Commit and push.
+- **Copied files:** `~/.config/omarchy/shell.json` and the
+  `~/.config/omarchy/plugins/mrlorentx.workspaces` plugin are real copies,
+  not symlinks. Omarchy rejects plugins containing symlinks, and it
+  replaces `shell.json` when it rewrites it. After editing them in the
+  repo, run `mise dot apply`. After changing them live (for example bar
+  settings through Omarchy), run `mise dot add --changed` to bring the
+  change into the repo.
 - **Add a dotfile:** `mise dot add --group home ~/.config/foo/bar.toml`,
   or create it under `home/` and run `mise dot apply`.
 - **Add a tool:** `mise use -g <tool>`, or edit `[tools]` and run
