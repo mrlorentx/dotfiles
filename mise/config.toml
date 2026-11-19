@@ -80,13 +80,19 @@ description = "Install and update tmux plugins with TPM"
 run = '''
 tpm=~/.tmux/plugins/tpm
 [ -x "$tpm/bin/install_plugins" ] || exit 0
-# TPM reads its path from a running tmux server, so start one and load the config.
-tmux start-server
+# TPM talks to a running tmux server. Without one, start a throwaway
+# detached session for the duration of this hook.
+started=""
+if ! tmux has-session 2>/dev/null; then
+  tmux new-session -d -s mise-tpm-setup
+  started=1
+fi
 tmux set-environment -g TMUX_PLUGIN_MANAGER_PATH "$HOME/.tmux/plugins/"
 tmux source-file ~/.config/tmux/tmux.conf 2>/dev/null || true
 "$tpm/bin/install_plugins" || true
 "$tpm/bin/update_plugins" all || true
 tmux source-file ~/.config/tmux/tmux.conf 2>/dev/null || true
+if [ -n "$started" ]; then tmux kill-session -t mise-tpm-setup; fi
 '''
 
 [bootstrap.hooks.post-tools]
