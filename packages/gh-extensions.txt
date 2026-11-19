@@ -1,5 +1,0 @@
-# gh CLI extensions installed via `gh extension install`.
-# Requires `gh` (provided by mise) and an authenticated session
-# (`gh auth login`) for the extensions to function.
-
-meiji163/gh-notify
