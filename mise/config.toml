@@ -1,0 +1,45 @@
+# Global mise config. Lives in ~/.dotfiles/mise/config.toml and is symlinked
+# to ~/.config/mise/config.toml by the [dotfiles] entry below.
+
+# --- Dotfiles ---------------------------------------------------------------
+# Everything under ~/.dotfiles/home mirrors $HOME. Each file is symlinked
+# individually, so directories in $HOME stay real and can hold unmanaged files.
+[dotfile_groups.home]
+root = "home"
+target = "~"
+mode = "symlink-each"
+
+[dotfile_groups.home.entries]
+# Omarchy creates these as private; keep them that way.
+"~/.config/omarchy/shell.json" = { permissions = "0600" }
+"~/.config/omarchy/plugins/mrlorentx.workspaces" = { permissions = "0700" }
+# Leftovers from older setups that should not exist.
+"~/.tmux.conf" = { mode = "absent" }
+"~/.config/hypr/bindings.conf" = { mode = "absent" }
+"~/.config/hypr/input.conf" = { mode = "absent" }
+"~/.config/hypr/looknfeel.conf" = { mode = "absent" }
+"~/.config/hypr/monitors.conf" = { mode = "absent" }
+
+[dotfiles]
+# This file itself.
+"~/.config/mise/config.toml" = { source = "~/.dotfiles/mise/config.toml" }
+
+# --- Tools ------------------------------------------------------------------
+[tools]
+node = "lts"
+"npm:pnpm" = "latest"
+go = "latest"
+chezmoi = "latest"
+opentofu = "latest"
+gh = "latest"
+golangci-lint = "latest"
+stripe-cli = "latest"
+uv = "latest"
+yq = "latest"
+yt-dlp = "latest"
+opencode = "latest"
+zola = "latest"
+bitwarden = "latest"
+"pipx:httpie" = "latest"
+codex = "latest"
+claude = "latest"

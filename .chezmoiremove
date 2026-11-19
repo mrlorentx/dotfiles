@@ -1,7 +1,0 @@
-.tmux.conf
-
-# Orphaned by the Omarchy Quattro upgrade: Hyprland reads .lua now.
-.config/hypr/bindings.conf
-.config/hypr/input.conf
-.config/hypr/looknfeel.conf
-.config/hypr/monitors.conf
